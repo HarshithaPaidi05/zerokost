@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Conversation Analysis{% endblock %}
+{% block subtitle %}Doctor-Patient Conversation Analyzer{% endblock %}
+
+{% block content %}
+<div class="analyzer-container">
+  <div class="settings-section">
+    <form method="POST" class="analysis-form">
+      <div class="settings-row">
+        <div class="setting-group">
+          <label for="model-select">LLM Model:</label>
+          <select id="model-select" name="model" class="form-select">
+            {% for model in available_models %}
+            <option value="{{ model }}" {% if model == default_model %}selected{% endif %}>{{ model }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="setting-group">
+          <label for="temp-slider">Temperature: <span id="temp-value">{{ default_temp }}</span></label>
+          <input type="range" class="form-range" id="temp-slider" name="temperature" 
+                 min="0.1" max="1.5" step="0.1" value="{{ default_temp }}">
+        </div>
+        
+        <div class="setting-group">
+          <label for="length-slider">Max Length: <span id="length-value">{{ default_length }}</span></label>
+          <input type="range" class="form-range" id="length-slider" name="max_length" 
+                 min="50" max="1000" step="10" value="{{ default_length }}">
+        </div>
+        
+        <button type="submit" class="btn btn-primary analyze-btn">
+          <i class="bi bi-play-circle"></i> Analyze
+        </button>
+      </div>
+      
+      <div class="input-group">
+        <label for="input-text">Conversation Text:</label>
+        <textarea id="input-text" name="text" class="form-control" rows="8"
+                  placeholder="Paste doctor-patient conversation here..."></textarea>
+      </div>
+    </form>
+  </div>
+  
+  {% if error %}
+  <div class="alert alert-danger error-message">
+    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+  </div>
+  {% endif %}
+  
+  {% if result %}
+  <div class="results-section">
+    <h3>Analysis Results:</h3>
+    <textarea class="form-control result-textarea" id="output-text" rows="15" readonly>{{ result }}</textarea>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tempSlider = document.getElementById('temp-slider');
+  const tempValue = document.getElementById('temp-value');
+  const lengthSlider = document.getElementById('length-slider');
+  const lengthValue = document.getElementById('length-value');
+  
+  tempSlider.addEventListener('input', function() {
+    tempValue.textContent = this.value;
+  });
+  
+  lengthSlider.addEventListener('input', function() {
+    lengthValue.textContent = this.value;
+  });
+});
+</script>
+{% endblock %}

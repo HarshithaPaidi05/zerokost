@@ -1,0 +1,38 @@
+[2025-05-21 13:26:50] Doctor said: hello hello hello hello hello
+[2025-05-21 13:26:50] Translated: हैलो हैलो हैलो हैलो
+[2025-05-21 13:27:37] Patient said: Aaj baat kar raha hun
+[2025-05-21 13:27:37] Translated: Talking today
+[2025-05-21 13:30:39] Doctor said: hello
+[2025-05-21 13:30:39] Translated: नमस्ते
+[2025-05-21 13:30:54] Doctor said: 1 2 3 Mera baat karo
+[2025-05-21 13:30:54] Translated: 1 2 3 Mera baat karo
+[2025-05-21 13:31:36] Patient said: hello mera naam Amar hai I am here for headache and stomach ache
+[2025-05-21 13:31:36] Translated: Hello mera name is my re -em heare for for hersha o end stomak
+[2025-05-21 13:34:14] Patient said: hello mera stomach dukh raha hai
+[2025-05-21 13:34:14] Translated: [Translation error]
+[2025-05-21 13:35:14] Patient said: hello mera naam Vaibhav hai mujhe pet Dard Hai angreji mein bolo Chamak Ek Hai
+[2025-05-21 13:35:14] Translated: [Translation error]
+[2025-05-21 13:36:11] Patient said: mera naam Vaibhav hai mujhe stomach Ek Hai
+[2025-05-21 13:36:11] Translated: My name is Vaibhav, I am Stomach one
+[2025-05-21 13:36:45] Patient said: mera naam Vaibhav hai mujhe stomach dard ho raha hai
+[2025-05-21 13:36:45] Translated: My name is Vaibhav, I am hurting Stomach
+[2025-05-21 13:37:19] Doctor said: Dava Khao do Paracetamol Paracetamol 50 mg + nice
+[2025-05-21 13:37:19] Translated: Dava Khao do Paracetamol Paracetamol 50 mg + nice
+[2025-05-21 13:37:53] Doctor said: you can check Paracetamol 50 mg day and night 23:20
+[2025-05-21 13:37:53] Translated: आप पेरासिटामोल 50 मिलीग्राम दिन और रात 23:20 की जांच कर सकते हैं
+[2025-05-21 13:38:25] Patient said: ok doctor Mein 11:20 ko Paracetamol 50 mg Le Lunga
+[2025-05-21 13:38:25] Translated: I will take Paracetamol 50 in OK Doctor at 11:20
+[2025-05-21 13:41:23] Patient said: doctor sahab Mere Sar aur pet mein bahut jyada Dard hota hai please give MI medication point
+[2025-05-21 13:41:23] Translated: Doctor sir, my head and stomach are very painful please Give Me Medication Point
+[2025-05-21 15:14:25] Doctor said: I am doctor how are you
+[2025-05-21 15:14:25] Translated: मैं डॉक्टर हूं कि आप कैसे हैं
+[2025-05-21 15:14:52] Patient said: mujhe bahut din se Sar Mein Dard Hai
+[2025-05-21 15:14:52] Translated: I have a pain in my head for a long time
+[2025-05-21 15:15:24] Patient said: mere pass
+[2025-05-21 15:15:24] Translated: mere pass
+[2025-05-21 15:16:22] Patient said: Mujhe 5 Din Se Sar Mein dard ho raha hai
+[2025-05-21 15:16:22] Translated: I have been having head ache since 5 days
+[2025-05-21 15:17:52] Doctor said: hydrogen
+[2025-05-21 15:17:52] Translated: [Translation error]
+[2025-05-21 15:19:09] Doctor said: yes yes
+[2025-05-21 15:19:09] Translated: ಹೌದು

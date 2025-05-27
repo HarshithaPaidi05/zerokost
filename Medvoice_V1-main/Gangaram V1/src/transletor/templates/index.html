@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Doctor-Patient Translator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f0f4f8;
+      font-family: 'Open Sans', sans-serif;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+
+    h2 {
+      font-weight: 700;
+      color: #214e9c;
+      margin: 24px 0 16px;
+      text-align: center;
+      font-size: 2.6rem;
+      user-select: text;
+      text-shadow: 1px 1px 3px #d0e1ff;
+    }
+
+    .container {
+      display: flex;
+      width: 95vw;
+      max-width: 1100px;
+      gap: 24px;
+      flex-grow: 1;
+      padding-bottom: 24px;
+      justify-content: space-between;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(33, 78, 156, 0.12);
+      padding: 26px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: box-shadow 0.3s ease;
+    }
+    .panel:hover {
+      box-shadow: 0 6px 24px rgba(33, 78, 156, 0.24);
+    }
+
+    .form-section {
+      flex: 3;
+      min-width: 320px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #214e9c;
+      margin-bottom: 6px;
+      user-select: text;
+    }
+
+    /* Calendar style dropdown */
+    .calendar-dropdown {
+      position: relative;
+      width: 100%;
+      user-select: none;
+    }
+
+    .calendar-dropdown select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background: #e6f0ff url('data:image/svg+xml;utf8,<svg fill="%23214e9c" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 14px center;
+      background-size: 20px;
+      border: 2px solid #214e9c;
+      border-radius: 12px;
+      color: #214e9c;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 12px 44px 12px 20px;
+      cursor: pointer;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+      font-family: 'Open Sans', sans-serif;
+      width: 100%;
+    }
+    .calendar-dropdown select:hover,
+    .calendar-dropdown select:focus {
+      border-color: #1761b3;
+      background-color: #c6dbff;
+      outline: none;
+    }
+
+    /* Buttons */
+    button {
+      background: #214e9c;
+      border: none;
+      padding: 12px 26px;
+      font-size: 1.1rem;
+      color: white;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: 'Open Sans', sans-serif;
+      letter-spacing: 0.04em;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      margin-right: 14px;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(33, 78, 156, 0.3);
+    }
+    button:hover {
+      background-color: #1761b3;
+      box-shadow: 0 6px 14px rgba(23, 97, 179, 0.6);
+    }
+    button:active {
+      box-shadow: inset 0 2px 6px rgba(23, 97, 179, 0.8);
+      background-color: #0f3d71;
+    }
+    button:last-child {
+      background: #d6e4ff;
+      color: #214e9c;
+      box-shadow: none;
+    }
+    button:last-child:hover {
+      background: #c1d4ff;
+      color: #1761b3;
+    }
+
+    h3 {
+      font-weight: 700;
+      font-size: 1.75rem;
+      margin-bottom: 14px;
+      color: #214e9c;
+      user-select: text;
+      text-shadow: 0 1px 2px #c6dbff;
+    }
+
+    /* Chat boxes */
+    .chat-box {
+      background: #f7faff;
+      border: 1px solid #c9dbfc;
+      border-radius: 12px;
+      padding: 16px 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1rem;
+      color: #214e9c;
+      user-select: text;
+      scroll-behavior: smooth;
+      transition: background-color 0.3s ease;
+    }
+    .chat-box:hover {
+      background-color: #eef4ff;
+    }
+
+    /* Chat message styles */
+    .chat-message {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      position: relative;
+      gap: 10px;
+      word-wrap: break-word;
+      opacity: 0;
+      animation: fadeInUp 0.4s forwards;
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .chat-message.doctor {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+    .chat-message.patient {
+      flex-direction: row-reverse;
+      justify-content: end;
+    }
+
+    /* Smaller avatar */
+    .avatar {
+      width: 36px;
+      height: 42px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 0 6px rgba(33, 78, 156, 0.25);
+      user-select: none;
+      transition: box-shadow 0.3s ease;
+    }
+    .avatar:hover {
+      box-shadow: 0 0 14px rgba(33, 78, 156, 0.5);
+    }
+
+    /* Message bubbles */
+    .message-bubble {
+      max-width: 70%;
+      padding: 10px 18px 20px 18px;
+      border-radius: 20px;
+      font-size: 1rem;
+      line-height: 1.4;
+      position: relative;
+      white-space: pre-wrap;
+      background: #dbe9ff;
+      color: #214e9c;
+      box-shadow: 0 2px 8px rgba(33, 78, 156, 0.15);
+      user-select: text;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-weight: 600;
+    }
+    .message-bubble:hover {
+      background-color: #c0d7ff;
+      box-shadow: 0 4px 14px rgba(23, 97, 179, 0.4);
+      cursor: pointer;
+    }
+
+    /* Doctor message bubble */
+    .chat-message.doctor .message-bubble {
+      background: #dbe9ff;
+      color: #214e9c;
+      font-weight: 700;
+    }
+
+    /* Patient message bubble */
+    .chat-message.patient .message-bubble {
+      background: #f5dbff;
+      color: #5a297a;
+      font-weight: 700;
+    }
+
+    /* Timestamp */
+    .timestamp {
+      font-size: 10px;
+      color: #5a5a5a;
+      position: absolute;
+      bottom: 6px;
+      right: 14px;
+      user-select: none;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 500;
+    }
+
+    a {
+      color: #214e9c;
+      font-weight: 700;
+      margin-top: 20px;
+      text-align: center;
+      text-decoration: none;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+      user-select: none;
+      display: block;
+    }
+    a:hover {
+      color: #1761b3;
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        padding: 0 16px 24px;
+      }
+      .form-section, .sidebar {
+        width: 100%;
+        padding: 20px 12px;
+      }
+      button {
+        width: 100%;
+        margin: 8px 0;
+      }
+      .chat-message.patient {
+        flex-direction: row;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <h2>Real-time Doctor-Patient Translator</h2>
+
+  <div class="container">
+    <!-- Left form section -->
+    <section class="form-section panel" aria-label="Translator Input Section">
+      <form methoethPOST-describedby="form-desc">
+        <div id="form-desc" class="sr-only">Select target languages for doctor and patient, then submit speech input.</div>
+
+        <label for="doctor_lang">Doctor's Target Language:</label>
+        <div class="calendar-dropdown">
+          <select name="doctor_lang" id="doctor_lang" aria-required="true" aria-label="Doctor's Target Language">
+            {% for name in languages %}
+              <option value="{{ name }}" {% if name == doctor_lang %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <label for="patient_lang" style="margin-top: 18px;">Patient's Target Language:</label>
+        <div class="calendar-dropdown">
+          <select name="patient_lang" id="patient_lang" aria-required="true" aria-label="Patient's Target Language">
+            {% for name in languages %}
+              <option value="{{ name }}" {% if name == patient_lang %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div role="group" aria-label="Speaker actions" style="margin-top: 26px;">
+          <button name="action" value="doctor" type="submit" aria-pressed="false"style="margin-top: 26px">Doctor Speaking</button>
+          <button name="action" value="patient" type="submit" aria-pressed="false"style="margin-top: 26px">Patient Speaking</button>
+          <button name="action" value="clear" type="submit" aria-pressed="false"style="margin-top: 20px">Clear History</button>
+        </div>
+      </form>
+
+      <h3>Latest Message:</h3>
+      <div class="chat-box" role="log" aria-live="polite" aria-atomic="true">
+        {% if sender == "doctor" %}
+          <article class="chat-message doctor" aria-label="Doctor message">
+            <img src="/static/doctor.jpg" class="avatar" alt="Doctor Avatar" />
+            <div class="message-bubble">
+              {{ message.split('] ')[1:] | join('] ') }}
+              <div class="timestamp">{{ message.split(']')[0] ~ ']' }}</div>
+            </div>
+          </article>
+        {% elif sender == "patient" %}
+          <article class="chat-message patient" aria-label="Patient message">
+            <img src="/static/patient.jpg" class="avatar" alt="Patient Avatar" />
+            <div class="message-bubble">
+              {{ message.split('] ')[1:] | join('] ') }}
+              <div class="timestamp">{{ message.split(']')[0] ~ ']' }}</div>
+            </div>
+          </article>
+        {% else %}
+          <p><em>No message yet.</em></p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Right sidebar -->
+    <aside class="sidebar panel" aria-label="Conversation History">
+      <h3>Conversation History:</h3>
+      <div class="chat-box" role="log" aria-live="polite" aria-atomic="false">
+        {% if conversation %}
+          {% for entry in conversation %}
+            <article class="chat-message {{ entry.speaker }}" aria-label="{{ entry.speaker | capitalize }} message">
+              <img src="/static/{{ entry.speaker }}.jpg" class="avatar" alt="{{ entry.speaker | capitalize }} Avatar" />
+              <div class="message-bubble"style="height: 80px;">
+                {{ entry.text.split('] ')[1:] | join('] ') }}
+                <div class="timestamp">{{ entry.text.split(']')[0] ~ ']' }}</div>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <p><em>No history yet.</em></p>
+        {% endif %}
+      </div>
+      <a href="/download" role="button" aria-label="Download conversation transcript">⬇️ Download Conversation</a>
+    </aside>
+  </div>
+</b

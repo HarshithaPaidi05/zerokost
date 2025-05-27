@@ -1,0 +1,10 @@
+[2025-05-15 18:18:47] Doctor said: high patient how are you why did you came here
+[2025-05-15 18:18:47] Translated: उच्च रोगी आप कैसे हैं आप यहां क्यों आए
+[2025-05-15 18:19:57] Patient said: doctor meri tabiyat Thodi kharab hai
+[2025-05-15 18:19:57] Translated: Doctor is my health a bit bad
+[2025-05-15 18:40:54] Doctor said: hello my name is
+[2025-05-15 18:40:54] Translated: hello my name is
+[2025-05-15 18:41:20] Doctor said: hello my name is Vaibhav
+[2025-05-15 18:41:20] Translated: हैलो मेरा नाम Vaibhav है
+[2025-05-15 18:42:17] Patient said: Mujhko Sar dard ho raha hai
+[2025-05-15 18:42:17] Translated: I have a headache

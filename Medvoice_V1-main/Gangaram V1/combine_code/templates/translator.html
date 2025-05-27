@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Real-time Doctor-Patient Translator{% endblock %}
+{% block subtitle %}Real-time Doctor-Patient Translator{% endblock %}
+
+{% block content %}
+<div class="row content">
+  <div class="col-md-12">
+    <div class="card settings-card">
+      <div class="card-body">
+        <!-- Chatbot Button -->
+        
+
+        <form method="POST">
+          <div class="row">
+            <div class="col-md-5">
+              <div class="mb-3">
+                <label for="doctor-lang-input" class="form-label">Doctor's Target Language:</label>
+                <select class="form-select dark-select" id="doctor-lang-input" name="doctor_lang">
+                  {% for language in languages %}
+                  <option value="{{ language }}" {% if language == doctor_lang %}selected{% endif %}>{{ language }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-5">
+              <div class="mb-3">
+                <label for="patient-lang-input" class="form-label">Patient's Target Language:</label>
+                <select class="form-select dark-select" id="patient-lang-input" name="patient_lang">
+                  {% for language in languages %}
+                  <option value="{{ language }}" {% if language == patient_lang %}selected{% endif %}>{{ language }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="submit" name="action" value="clear" class="btn btn-secondary w-100">
+                <i class="bi bi-trash"></i> Clear
+              </button>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <button type="submit" name="action" value="doctor" class="btn btn-primary w-100">
+                <i class="bi bi-mic"></i> Doctor Speaking
+              </button>
+            </div>
+            <div class="col-md-6">
+              <button type="submit" name="action" value="patient" class="btn btn-primary w-100">
+                <i class="bi bi-mic"></i> Patient Speaking
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card result-card">
+          <div class="card-header">
+            <h3>Latest Message:</h3>
+          </div>
+          <div class="card-body chat-box" role="log" aria-live="polite" aria-atomic="true">
+            {% if sender == "doctor" %}
+              <article class="chat-message doctor" aria-label="Doctor message">
+                <img src="{{ url_for('static', filename='doctor.jpg') }}" class="avatar" alt="Doctor Avatar" />
+                <div class="message-bubble">
+                  {{ message.split('] ')[1:] | join('] ') }}
+                  <div class="timestamp">{{ message.split(']')[0] ~ ']' }}</div>
+                </div>
+              </article>
+            {% elif sender == "patient" %}
+              <article class="chat-message patient" aria-label="Patient message">
+                <img src="{{ url_for('static', filename='patient.jpg') }}" class="avatar" alt="Patient Avatar" />
+                <div class="message-bubble">
+                  {{ message.split('] ')[1:] | join('] ') }}
+                  <div class="timestamp">{{ message.split(']')[0] ~ ']' }}</div>
+                </div>
+              </article>
+            {% else %}
+              <p><em>Not yet started.</em></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card result-card">
+          <div class="card-header">
+            <h3>Conversation History:</h3>
+          </div>
+          <div class="card-body chat-box" role="log" aria-live="polite" aria-atomic="false">
+            {% if conversation %}
+              {% for entry in conversation %}
+                <article class="chat-message {{ entry.speaker }}" aria-label="{{ entry.speaker | capitalize }} message">
+                  <img src="{{ url_for('static', filename=entry.speaker + '.jpg') }}" class="avatar" alt="{{ entry.speaker | capitalize }} Avatar" />
+                  <div class="message-bubble">
+                    {{ entry.text.split('] ')[1:] | join('] ') }}
+                    <div class="timestamp">{{ entry.text.split(']')[0] ~ ']' }}</div>
+                  </div>
+                </article>
+              {% endfor %}
+            {% else %}
+              <p><em>No history yet.</em></p>
+            {% endif %}
+          </div>
+          <div class="card-footer">
+            <a href="{{ url_for('download_file') }}" class="btn btn-outline-primary w-100">
+              <i class="bi bi-download"></i> Download Conversation
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
