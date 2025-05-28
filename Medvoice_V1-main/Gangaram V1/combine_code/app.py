@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import time
-import pygame
 import speech_recognition as sr
 from gtts import gTTS
 from datetime import datetime
@@ -16,7 +15,6 @@ from fpdf import FPDF
 import traceback
 
 app = Flask(__name__)
-pygame.mixer.init()
 
 # ========== Configuration ==========
 load_dotenv()
@@ -134,32 +132,19 @@ def translate_and_speak(speaker, target_lang_name):
         f.write(f"{timestamp} Translated: {translated}\n")
 
     return f"{timestamp} {speaker} said: {spoken_text}\n{timestamp} Translated: {translated}"
+
 def text_to_voice(text_data, to_language):
-    """Convert text to speech and play it"""
     try:
-        # Create a temporary file with a unique name
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_audio:
             temp_path = temp_audio.name
-        
-        # Generate speech and save to temp file
         myobj = gTTS(text=text_data, lang=to_language, slow=False)
         myobj.save(temp_path)
-        
-        # Play the audio
-        audio = pygame.mixer.Sound(temp_path)
-        audio.play()
-        
-        # Wait for playback to finish
-        time.sleep(audio.get_length())
-        
-        # Clean up
-        pygame.mixer.stop()
-        os.remove(temp_path)
-        
+        return temp_path
     except Exception as e:
         print(f"Error in text_to_voice: {e}")
         if os.path.exists(temp_path):
             os.remove(temp_path)
+        return None
 
 def read_conversation_history():
     conversation = []
@@ -354,24 +339,21 @@ def upload_file():
                     pdf.multi_cell(0, 10, txt=value.strip())
                     pdf.ln(5)
 
-            # Save to temp file
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
-                pdf.output(temp_pdf.name)
-                temp_path = temp_pdf.name
+            # Save to temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+                pdf_output_path = tmp_file.name
+                pdf.output(pdf_output_path)
 
-            return jsonify({
-                "success": True,
-                "form_data": extracted,
-                "download_link": f"/download_report?file={os.path.basename(temp_path)}"
-            })
+            return send_file(pdf_output_path, as_attachment=True, download_name="consultation_summary.pdf")
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({"error": str(e)}), 500
+            return jsonify({"error": f"AI processing failed: {str(e)}"}), 500
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({"error": f"Server error: {str(e)}"}), 500
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
 
 # @app.route('/chatbots')
 # def chatbots():
@@ -408,6 +390,53 @@ def download_report():
         print(f"Download error: {e}")
         traceback.print_exc()
         return f"Download error: {str(e)}", 500
+
+@app.route("/save-recording", methods=["POST"])
+def save_recording():
+    try:
+        if 'audio' not in request.files:
+            return jsonify({"error": "No audio file uploaded"}), 400
+        audio_file = request.files['audio']
+        # Save to a temporary file
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
+            audio_path = temp_audio.name
+            audio_file.save(audio_path)
+        # Use speech_recognition to process the audio file
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(audio_path) as source:
+            audio = recognizer.record(source)
+        try:
+            recognized_text = recognizer.recognize_google(audio)
+        except sr.UnknownValueError:
+            recognized_text = ""
+        except sr.RequestError as e:
+            recognized_text = f"Speech Recognition Error: {e}"
+        os.remove(audio_path)
+        # Optionally, translate the recognized text (default to Hindi for demo)
+        target_lang_code = request.form.get('target_lang', 'hi')
+        translated = translate_text(recognized_text, target_lang_code) if recognized_text else ""
+        # Save to conversation history
+        timestamp = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+        with open(history_file, "a", encoding="utf-8") as f:
+            f.write(f"{timestamp} Uploaded said: {recognized_text}\n")
+            f.write(f"{timestamp} Translated: {translated}\n")
+        return jsonify({"recognized_text": recognized_text, "translated": translated})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/get-audio")
+def get_audio():
+    text = request.args.get("text")
+    lang = request.args.get("lang", "en")
+    if not text:
+        return "Missing text", 400
+    try:
+        temp_path = text_to_voice(text, lang)
+        if not temp_path:
+            return "Error generating audio", 500
+        return send_file(temp_path, mimetype="audio/mpeg", as_attachment=False)
+    except Exception as e:
+        return f"Error generating audio: {e}", 500
 
 # ========== Run Flask App ==========
 if __name__ == "__main__":
